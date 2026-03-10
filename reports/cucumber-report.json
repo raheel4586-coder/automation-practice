@@ -1,0 +1,109 @@
+[
+  {
+    "description": "",
+    "elements": [
+      {
+        "description": "",
+        "id": "login-functionality;login-with-multiple-users",
+        "keyword": "Scenario Outline",
+        "line": 10,
+        "name": "Login with multiple users",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "user navigate to the login page",
+            "match": {
+              "location": "step-definitions\\loginSteps.ts:7"
+            },
+            "result": {
+              "status": "failed",
+              "duration": 1022399,
+              "error_message": "TypeError: Cannot read properties of undefined (reading 'goto')\n    at LoginPage.<anonymous> (D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:8:25)\n    at D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:8:71\n    at __awaiter (D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:4:12)\n    at LoginPage.navigate (D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:18:16)\n    at World.<anonymous> (D:\\cucumber-playwright-framework\\step-definitions\\loginSteps.ts:9:21)\n    at D:\\cucumber-playwright-framework\\step-definitions\\loginSteps.ts:8:71"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "user enter admin name and admin123",
+            "result": {
+              "status": "undefined",
+              "duration": 0
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "user should see the dashboard",
+            "match": {
+              "location": "step-definitions\\loginSteps.ts:19"
+            },
+            "result": {
+              "status": "skipped",
+              "duration": 0
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "login-functionality;login-with-multiple-users",
+        "keyword": "Scenario Outline",
+        "line": 11,
+        "name": "Login with multiple users",
+        "steps": [
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 4,
+            "name": "user navigate to the login page",
+            "match": {
+              "location": "step-definitions\\loginSteps.ts:7"
+            },
+            "result": {
+              "status": "failed",
+              "duration": 193800,
+              "error_message": "TypeError: Cannot read properties of undefined (reading 'goto')\n    at LoginPage.<anonymous> (D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:8:25)\n    at D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:8:71\n    at __awaiter (D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:4:12)\n    at LoginPage.navigate (D:\\cucumber-playwright-framework\\pages\\LoginPage.ts:18:16)\n    at World.<anonymous> (D:\\cucumber-playwright-framework\\step-definitions\\loginSteps.ts:9:21)\n    at D:\\cucumber-playwright-framework\\step-definitions\\loginSteps.ts:8:71"
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 5,
+            "name": "user enter test name and test123",
+            "result": {
+              "status": "undefined",
+              "duration": 0
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 6,
+            "name": "user should see the dashboard",
+            "match": {
+              "location": "step-definitions\\loginSteps.ts:19"
+            },
+            "result": {
+              "status": "skipped",
+              "duration": 0
+            }
+          }
+        ],
+        "tags": [],
+        "type": "scenario"
+      }
+    ],
+    "id": "login-functionality",
+    "line": 1,
+    "keyword": "Feature",
+    "name": "Login functionality",
+    "tags": [],
+    "uri": "features\\login.feature"
+  }
+]
