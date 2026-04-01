@@ -17,10 +17,21 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
+    "@playwright/test": "^1.59.0",
     "@types/node": "^25.3.5",
     "allure-commandline": "^2.37.0",
     "cucumber-html-reporter": "^7.2.0",
     "dotenv": "^17.3.1"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raheel4586-coder/automation-practice.git"
+  },
+  "bugs": {
+    "url": "https://github.com/raheel4586-coder/automation-practice/issues"
+  },
+  "homepage": "https://github.com/raheel4586-coder/automation-practice#readme"
 }
