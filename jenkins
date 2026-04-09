@@ -6,28 +6,24 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                git branch: 'playwrighttest01',
-                    url: 'https://github.com/raheel4586-coder/automation-practice.git'
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                echo 'Installing npm packages...'
+                bat 'npm ci'
             }
         }
 
         stage('Install Playwright Browsers') {
             steps {
-                sh 'npx playwright install --with-deps'
+                echo 'Installing Playwright browsers...'
+                bat 'npx playwright install'
             }
         }
 
-        stage('Run Playwright Test') {
+        stage('Run Playwright Tests') {
             steps {
-                sh 'npx playwright test'
+                echo 'Running Playwright tests...'
+                bat 'npx playwright test'
             }
         }
 
@@ -36,6 +32,18 @@ pipeline {
                 archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
                 archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
             }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Playwright tests passed successfully.'
+        }
+        failure {
+            echo 'Playwright tests failed.'
         }
     }
 }
