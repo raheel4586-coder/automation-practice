@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    environment {
+        CI = 'true'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'playwrighttest01',
+                    url: 'https://github.com/raheel4586-coder/automation-practice.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+
+        stage('Install Playwright Browsers') {
+            steps {
+                sh 'npx playwright install --with-deps'
+            }
+        }
+
+        stage('Run Playwright Test') {
+            steps {
+                sh 'npx playwright test'
+            }
+        }
+
+        stage('Archive Report') {
+            steps {
+                archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+            }
+        }
+    }
+}
