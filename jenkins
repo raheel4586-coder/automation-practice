@@ -21,7 +21,7 @@ pipeline {
         stage('Info') {
             steps {
                 echo "Pipeline triggered successfully"
-                echo "Building workspace: ${env.WORKSPACE}"
+                echo "Workspace: ${env.WORKSPACE}"
             }
         }
 
@@ -44,7 +44,8 @@ pipeline {
         stage('Run Tests') {
             steps {
                 dir('automation') {
-                    bat 'npx playwright test'
+                    // 🔥 FIX: explicitly point to tests folder
+                    bat 'npx playwright test tests'
                 }
             }
         }
@@ -56,7 +57,7 @@ pipeline {
             }
         }
 
-        stage('Create Zip Report') {
+        stage('Zip Report') {
             steps {
                 bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip -Force'
             }
@@ -74,13 +75,12 @@ pipeline {
 
         failure {
             echo "❌ BUILD FAILED"
-            echo "Job: ${env.JOB_NAME}"
-            echo "Build: ${env.BUILD_NUMBER}"
+            echo "Check logs for details"
             echo "URL: ${env.BUILD_URL}"
         }
 
         always {
-            echo "Pipeline execution completed."
+            echo "Pipeline completed"
         }
     }
 }
