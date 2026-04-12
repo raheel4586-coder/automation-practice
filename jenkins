@@ -1,36 +1,61 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
     environment {
         CI = 'true'
     }
 
     stages {
-        stage('Install Dependencies') {
+        stage('Checkout Main Branch') {
             steps {
-                echo 'Installing npm packages...'
-                bat 'npm ci'
+                dir('app') {
+                    git branch: 'main',
+                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                }
             }
         }
 
-        stage('Install Playwright Browsers') {
+        stage('Checkout Automation Branch') {
             steps {
-                echo 'Installing Playwright browsers...'
-                bat 'npx playwright install'
+                dir('automation') {
+                    git branch: 'playwrighttest01',
+                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('automation') {
+                    bat 'npm ci'
+                }
+            }
+        }
+
+        stage('Install Browsers') {
+            steps {
+                dir('automation') {
+                    bat 'npx playwright install'
+                }
             }
         }
 
         stage('Run Playwright Tests') {
             steps {
-                echo 'Running Playwright tests...'
-                bat 'npx playwright test'
+                dir('automation') {
+                    bat 'npx playwright test'
+                }
             }
         }
 
-        stage('Archive Report') {
+        stage('Archive Reports') {
             steps {
-                archiveArtifacts artifacts: 'playwright-report/**', allowEmptyArchive: true
-                archiveArtifacts artifacts: 'test-results/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'automation/playwright-report/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'automation/test-results/**', allowEmptyArchive: true
             }
         }
     }
