@@ -39,7 +39,7 @@ pipeline {
         stage('Install Browsers') {
             steps {
                 dir('automation') {
-                    bat 'npx playwright install'
+                    bat 'npx playwright install --with-deps'
                 }
             }
         }
@@ -47,7 +47,7 @@ pipeline {
         stage('Run Playwright Tests') {
             steps {
                 dir('automation') {
-                    bat 'npx playwright install --with-deps'
+                    bat 'npx playwright test'
                 }
             }
         }
