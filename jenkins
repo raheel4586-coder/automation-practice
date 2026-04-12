@@ -12,16 +12,21 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Validate Branch') {
             steps {
-                checkout scm
+                script {
+                    echo "Branch: ${env.BRANCH_NAME}"
+
+                    if (env.BRANCH_NAME != 'main') {
+                        error("❌ Pipeline allowed only on main branch. Current: ${env.BRANCH_NAME}")
+                    }
+                }
             }
         }
 
-        stage('Info') {
+        stage('Checkout Code') {
             steps {
-                echo "Pipeline triggered successfully"
-                echo "Workspace: ${env.WORKSPACE}"
+                checkout scm
             }
         }
 
@@ -44,8 +49,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 dir('automation') {
-                    // 🔥 FIX: explicitly point to tests folder
-                    bat 'npx playwright test tests'
+                    bat 'npx playwright test'
                 }
             }
         }
@@ -67,20 +71,43 @@ pipeline {
     post {
 
         success {
-            echo "✅ BUILD SUCCESS"
-            echo "Job: ${env.JOB_NAME}"
-            echo "Build: ${env.BUILD_NUMBER}"
-            echo "URL: ${env.BUILD_URL}"
+            emailext (
+                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Build SUCCESS 🎉
+
+Job: ${env.JOB_NAME}
+Build: ${env.BUILD_NUMBER}
+URL: ${env.BUILD_URL}
+
+📊 Report:
+${env.BUILD_URL}artifact/automation/playwright-report/index.html
+                """,
+                to: "mukraheel@gmail.com",
+                attachmentsPattern: 'automation/playwright-report.zip'
+            )
         }
 
         failure {
-            echo "❌ BUILD FAILED"
-            echo "Check logs for details"
-            echo "URL: ${env.BUILD_URL}"
+            emailext (
+                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+Build FAILED ❌
+
+Job: ${env.JOB_NAME}
+Build: ${env.BUILD_NUMBER}
+URL: ${env.BUILD_URL}
+
+📊 Check Report:
+${env.BUILD_URL}artifact/automation/playwright-report/index.html
+                """,
+                to: "mukraheel@gmail.com",
+                attachmentsPattern: 'automation/playwright-report.zip'
+            )
         }
 
         always {
-            echo "Pipeline completed"
+            echo "Pipeline execution completed."
         }
     }
 }
