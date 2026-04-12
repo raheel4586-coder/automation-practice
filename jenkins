@@ -3,10 +3,7 @@ pipeline {
 
     options {
         skipDefaultCheckout(true)
-<<<<<<< HEAD
-=======
         timestamps()
->>>>>>> devbranch
     }
 
     environment {
@@ -14,39 +11,22 @@ pipeline {
     }
 
     stages {
-<<<<<<< HEAD
-        stage('Checkout Main Branch') {
+
+        stage('Checkout Code') {
             steps {
-                dir('app') {
-                    git branch: 'main',
-                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
-=======
+                checkout scm
+            }
+        }
 
         stage('Validate Branch') {
             steps {
                 script {
-                    echo "Branch: ${env.BRANCH_NAME}"
+                    echo "Running on branch: ${env.BRANCH_NAME}"
 
                     if (env.BRANCH_NAME != 'main') {
                         error("❌ Pipeline allowed only on main branch. Current: ${env.BRANCH_NAME}")
                     }
->>>>>>> devbranch
                 }
-            }
-        }
-
-<<<<<<< HEAD
-        stage('Checkout Automation Branch') {
-            steps {
-                dir('automation') {
-                    git branch: 'playwrighttest01',
-                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
-                }
-=======
-        stage('Checkout Code') {
-            steps {
-                checkout scm
->>>>>>> devbranch
             }
         }
 
@@ -58,26 +38,15 @@ pipeline {
             }
         }
 
-<<<<<<< HEAD
-        stage('Install Browsers') {
-            steps {
-                dir('automation') {
-                    bat 'npx playwright install'
-=======
         stage('Install Playwright Browsers') {
             steps {
                 dir('automation') {
                     bat 'npx playwright install --with-deps'
->>>>>>> devbranch
                 }
             }
         }
 
-<<<<<<< HEAD
-        stage('Run Playwright Tests') {
-=======
         stage('Run Tests') {
->>>>>>> devbranch
             steps {
                 dir('automation') {
                     bat 'npx playwright test'
@@ -89,30 +58,17 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'automation/playwright-report/**', allowEmptyArchive: true
                 archiveArtifacts artifacts: 'automation/test-results/**', allowEmptyArchive: true
-<<<<<<< HEAD
-=======
             }
         }
 
-        stage('Zip Report') {
+        stage('Create Zip Report') {
             steps {
                 bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip -Force'
->>>>>>> devbranch
             }
         }
     }
 
     post {
-<<<<<<< HEAD
-        always {
-            echo 'Pipeline finished.'
-        }
-        success {
-            echo 'Playwright tests passed successfully.'
-        }
-        failure {
-            echo 'Playwright tests failed.'
-=======
 
         success {
             emailext (
@@ -152,7 +108,6 @@ ${env.BUILD_URL}artifact/automation/playwright-report/index.html
 
         always {
             echo "Pipeline execution completed."
->>>>>>> devbranch
         }
     }
 }
