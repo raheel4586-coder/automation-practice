@@ -3,6 +3,7 @@ pipeline {
 
     options {
         skipDefaultCheckout(true)
+        timestamps()
     }
 
     environment {
@@ -10,21 +11,22 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Main Branch') {
+
+        stage('Validate Branch') {
             steps {
-                dir('app') {
-                    git branch: 'main',
-                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                script {
+                    echo "Branch: ${env.BRANCH_NAME}"
+
+                    if (env.BRANCH_NAME != 'main') {
+                        error("❌ Pipeline allowed only on main branch. Current: ${env.BRANCH_NAME}")
+                    }
                 }
             }
         }
 
-        stage('Checkout Automation Branch') {
+        stage('Checkout Code') {
             steps {
-                dir('automation') {
-                    git branch: 'playwrighttest01',
-                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
-                }
+                checkout scm
             }
         }
 
@@ -36,15 +38,15 @@ pipeline {
             }
         }
 
-        stage('Install Browsers') {
+        stage('Install Playwright Browsers') {
             steps {
                 dir('automation') {
-                    bat 'npx playwright install'
+                    bat 'npx playwright install --with-deps'
                 }
             }
         }
 
-        stage('Run Playwright Tests') {
+        stage('Run Tests') {
             steps {
                 dir('automation') {
                     bat 'npx playwright test'
@@ -61,24 +63,25 @@ pipeline {
 
         stage('Zip Report') {
             steps {
-                bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip'
+                bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip -Force'
             }
         }
     }
 
     post {
+
         success {
             emailext (
                 subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
-                Build Successful!
+Build SUCCESS 🎉
 
-                Job: ${env.JOB_NAME}
-                Build: ${env.BUILD_NUMBER}
-                URL: ${env.BUILD_URL}
+Job: ${env.JOB_NAME}
+Build: ${env.BUILD_NUMBER}
+URL: ${env.BUILD_URL}
 
-                Download Report:
-                ${env.BUILD_URL}artifact/automation/playwright-report/index.html
+📊 Report:
+${env.BUILD_URL}artifact/automation/playwright-report/index.html
                 """,
                 to: "mukraheel@gmail.com",
                 attachmentsPattern: 'automation/playwright-report.zip'
@@ -89,14 +92,14 @@ pipeline {
             emailext (
                 subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
-                Build Failed!
+Build FAILED ❌
 
-                Job: ${env.JOB_NAME}
-                Build: ${env.BUILD_NUMBER}
-                URL: ${env.BUILD_URL}
+Job: ${env.JOB_NAME}
+Build: ${env.BUILD_NUMBER}
+URL: ${env.BUILD_URL}
 
-                Check Report:
-                ${env.BUILD_URL}artifact/automation/playwright-report/index.html
+📊 Check Report:
+${env.BUILD_URL}artifact/automation/playwright-report/index.html
                 """,
                 to: "mukraheel@gmail.com",
                 attachmentsPattern: 'automation/playwright-report.zip'
@@ -104,7 +107,7 @@ pipeline {
         }
 
         always {
-            echo 'Pipeline finished.'
+            echo "Pipeline execution completed."
         }
     }
 }
