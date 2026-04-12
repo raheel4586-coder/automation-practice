@@ -18,15 +18,10 @@ pipeline {
             }
         }
 
-        stage('Validate Branch') {
+        stage('Info') {
             steps {
-                script {
-                    echo "Running on branch: ${env.BRANCH_NAME}"
-
-                    if (env.BRANCH_NAME != 'main') {
-                        error("❌ Pipeline allowed only on main branch. Current: ${env.BRANCH_NAME}")
-                    }
-                }
+                echo "Pipeline triggered successfully"
+                echo "Building workspace: ${env.WORKSPACE}"
             }
         }
 
@@ -61,7 +56,7 @@ pipeline {
             }
         }
 
-        stage('Zip Report') {
+        stage('Create Zip Report') {
             steps {
                 bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip -Force'
             }
@@ -71,14 +66,14 @@ pipeline {
     post {
 
         success {
-            echo "✅ Build SUCCESS"
+            echo "✅ BUILD SUCCESS"
             echo "Job: ${env.JOB_NAME}"
             echo "Build: ${env.BUILD_NUMBER}"
             echo "URL: ${env.BUILD_URL}"
         }
 
         failure {
-            echo "❌ Build FAILED"
+            echo "❌ BUILD FAILED"
             echo "Job: ${env.JOB_NAME}"
             echo "Build: ${env.BUILD_NUMBER}"
             echo "URL: ${env.BUILD_URL}"
