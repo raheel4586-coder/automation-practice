@@ -61,7 +61,7 @@ pipeline {
             }
         }
 
-        stage('Create Zip Report') {
+        stage('Zip Report') {
             steps {
                 bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip -Force'
             }
@@ -71,39 +71,17 @@ pipeline {
     post {
 
         success {
-            emailext (
-                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Build SUCCESS 🎉
-
-Job: ${env.JOB_NAME}
-Build: ${env.BUILD_NUMBER}
-URL: ${env.BUILD_URL}
-
-📊 Report:
-${env.BUILD_URL}artifact/automation/playwright-report/index.html
-                """,
-                to: "mukraheel@gmail.com",
-                attachmentsPattern: 'automation/playwright-report.zip'
-            )
+            echo "✅ Build SUCCESS"
+            echo "Job: ${env.JOB_NAME}"
+            echo "Build: ${env.BUILD_NUMBER}"
+            echo "URL: ${env.BUILD_URL}"
         }
 
         failure {
-            emailext (
-                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-Build FAILED ❌
-
-Job: ${env.JOB_NAME}
-Build: ${env.BUILD_NUMBER}
-URL: ${env.BUILD_URL}
-
-📊 Check Report:
-${env.BUILD_URL}artifact/automation/playwright-report/index.html
-                """,
-                to: "mukraheel@gmail.com",
-                attachmentsPattern: 'automation/playwright-report.zip'
-            )
+            echo "❌ Build FAILED"
+            echo "Job: ${env.JOB_NAME}"
+            echo "Build: ${env.BUILD_NUMBER}"
+            echo "URL: ${env.BUILD_URL}"
         }
 
         always {
