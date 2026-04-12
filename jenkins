@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     options {
-        skipDefaultCheckout(true)
+        skipDefaultCheckout(false)
+        timestamps()
     }
 
     environment {
@@ -10,21 +11,10 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Main Branch') {
-            steps {
-                dir('app') {
-                    git branch: 'main',
-                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
-                }
-            }
-        }
 
-        stage('Checkout Automation Branch') {
+        stage('Checkout Source Code') {
             steps {
-                dir('automation') {
-                    git branch: 'playwrighttest01',
-                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
-                }
+                checkout scm
             }
         }
 
@@ -36,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Install Browsers') {
+        stage('Install Playwright Browsers') {
             steps {
                 dir('automation') {
                     bat 'npx playwright install --with-deps'
@@ -52,7 +42,15 @@ pipeline {
             }
         }
 
-        stage('Archive Reports') {
+        stage('Generate Report') {
+            steps {
+                dir('automation') {
+                    bat 'npx playwright show-report || exit 0'
+                }
+            }
+        }
+
+        stage('Archive Reports & Results') {
             steps {
                 archiveArtifacts artifacts: 'automation/playwright-report/**', allowEmptyArchive: true
                 archiveArtifacts artifacts: 'automation/test-results/**', allowEmptyArchive: true
@@ -64,11 +62,13 @@ pipeline {
         always {
             echo 'Pipeline finished.'
         }
+
         success {
-            echo 'Playwright tests passed successfully.'
+            echo '✅ Playwright tests passed successfully.'
         }
+
         failure {
-            echo 'Playwright tests failed.'
+            echo '❌ Playwright tests failed.'
         }
     }
 }
