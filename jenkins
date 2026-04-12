@@ -1,21 +1,74 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    environment {
+        CI = 'true'
+    }
+
     stages {
-        stage('Build') {
+        stage('Checkout Main Branch') {
             steps {
-                echo 'Build Started'
+                dir('app') {
+                    git branch: 'main',
+                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                }
             }
         }
-        stage('Test'){
-            steps{
-                echo 'Running the Test'
+
+        stage('Checkout Automation Branch') {
+            steps {
+                dir('automation') {
+                    git branch: 'playwrighttest01',
+                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                }
             }
         }
-        stage('Deploy'){
-            steps{
-                echo 'Build Deployed'
+
+        stage('Install Dependencies') {
+            steps {
+                dir('automation') {
+                    bat 'npm ci'
+                }
             }
+        }
+
+        stage('Install Browsers') {
+            steps {
+                dir('automation') {
+                    bat 'npx playwright install'
+                }
+            }
+        }
+
+        stage('Run Playwright Tests') {
+            steps {
+                dir('automation') {
+                    bat 'npx playwright test'
+                }
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                archiveArtifacts artifacts: 'automation/playwright-report/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'automation/test-results/**', allowEmptyArchive: true
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Playwright tests passed successfully.'
+        }
+        failure {
+            echo 'Playwright tests failed.'
         }
     }
 }
