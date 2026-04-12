@@ -1,21 +1,110 @@
 pipeline {
     agent any
 
+    options {
+        skipDefaultCheckout(true)
+    }
+
+    environment {
+        CI = 'true'
+    }
+
     stages {
-        stage('Build') {
+        stage('Checkout Main Branch') {
             steps {
-                echo 'Build Started'
+                dir('app') {
+                    git branch: 'main',
+                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                }
             }
         }
-        stage('Test'){
-            steps{
-                echo 'Running the Test'
+
+        stage('Checkout Automation Branch') {
+            steps {
+                dir('automation') {
+                    git branch: 'playwrighttest01',
+                        url: 'https://github.com/raheel4586-coder/automation-practice.git'
+                }
             }
         }
-        stage('Deploy'){
-            steps{
-                echo 'Build Deployed'
+
+        stage('Install Dependencies') {
+            steps {
+                dir('automation') {
+                    bat 'npm ci'
+                }
             }
+        }
+
+        stage('Install Browsers') {
+            steps {
+                dir('automation') {
+                    bat 'npx playwright install'
+                }
+            }
+        }
+
+        stage('Run Playwright Tests') {
+            steps {
+                dir('automation') {
+                    bat 'npx playwright test'
+                }
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                archiveArtifacts artifacts: 'automation/playwright-report/**', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'automation/test-results/**', allowEmptyArchive: true
+            }
+        }
+
+        stage('Zip Report') {
+            steps {
+                bat 'powershell Compress-Archive -Path automation\\playwright-report\\* -DestinationPath automation\\playwright-report.zip'
+            }
+        }
+    }
+
+    post {
+        success {
+            emailext (
+                subject: "✅ SUCCESS: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                Build Successful!
+
+                Job: ${env.JOB_NAME}
+                Build: ${env.BUILD_NUMBER}
+                URL: ${env.BUILD_URL}
+
+                Download Report:
+                ${env.BUILD_URL}artifact/automation/playwright-report/index.html
+                """,
+                to: "mukraheel@gmail.com",
+                attachmentsPattern: 'automation/playwright-report.zip'
+            )
+        }
+
+        failure {
+            emailext (
+                subject: "❌ FAILURE: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                Build Failed!
+
+                Job: ${env.JOB_NAME}
+                Build: ${env.BUILD_NUMBER}
+                URL: ${env.BUILD_URL}
+
+                Check Report:
+                ${env.BUILD_URL}artifact/automation/playwright-report/index.html
+                """,
+                to: "mukraheel@gmail.com",
+                attachmentsPattern: 'automation/playwright-report.zip'
+            )
+        }
+
+        always {
+            echo 'Pipeline finished.'
         }
     }
 }
