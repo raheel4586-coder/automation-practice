@@ -47,7 +47,7 @@ pipeline {
         stage('Run Playwright Tests') {
             steps {
                 dir('automation') {
-                    bat 'npx playwright test'
+                    bat 'npx playwright install --with-deps'
                 }
             }
         }
