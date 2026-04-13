@@ -1,10 +1,23 @@
 import { test, expect } from '@playwright/test';
+import { addTestResult } from "../testrailReporter"
 
 test('has title', async ({ page }) => {
+
+  const runId = 16;   // your TestRail Run ID
+  const caseId = 120; // your TestRail Case ID
+
+  try{
   await page.goto('https://playwright.dev/');
 
   // Expect a title "to contain" a substring.
   await expect(page).toHaveTitle(/Playwright/);
+  await addTestResult(runId, caseId, 1, "Login passed successfully");
+  }
+  catch(error){
+     await addTestResult(runId, caseId, 5, `Test failed: ${error}`);
+    throw error;
+
+  }
 });
 
 test('get started link', async ({ page }) => {
