@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { addTestResult } from "../testrailReporter"
 
-test('has title', async ({ page }) => {
+test('C47 has title', async ({ page }) => {
 
   const runId = 16;   // your TestRail Run ID
-  const caseId = 120; // your TestRail Case ID
+  const caseId = 47; // your TestRail Case ID
 
   try{
   await page.goto('https://playwright.dev/');
