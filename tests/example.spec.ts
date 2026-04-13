@@ -14,7 +14,7 @@ test('has title', async ({ page }) => {
   await addTestResult(runId, caseId, 1, "Login passed successfully");
   }
   catch(error){
-     await addTestResult(runId, caseId, 5, `Test failed: ${error}`);
+     await addTestResult(runId, caseId, 5, 'Test failed: ${error}');
     throw error;
 
   }

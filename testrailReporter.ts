@@ -6,11 +6,20 @@ export async function addTestResult(
   statusId: number,
   comment: string
 ) {
-  return await testrail.post(
-    `/add_result_for_case/${runId}/${caseId}`,
-    {
-      status_id: statusId,
-      comment,
-    }
-  );
+  try {
+    const response = await testrail.post(
+      `/add_result_for_case/${runId}/${caseId}`,
+      {
+        status_id: statusId,
+        comment,
+      }
+    );
+
+    console.log(`✅ Result sent to TestRail: Case ${caseId}`);
+    return response.data;
+
+  } catch (error: any) {
+    console.error("❌ TestRail Error:", error.response?.data || error.message);
+    throw error;
+  }
 }

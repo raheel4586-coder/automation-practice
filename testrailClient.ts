@@ -3,16 +3,13 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const baseURL = process.env.RAIL_URL!;
-const username = process.env.RAIL_USER!;
-const apiKey = process.env.RAIL_API_KEY!;
-
-const auth = Buffer.from(`${username}:${apiKey}`).toString("base64");
-
 export const testrail = axios.create({
-  baseURL: `${baseURL}/index.php?/api/v2`,
+  baseURL: `${process.env.RAIL_URL}/index.php?/api/v2`,
+  auth: {
+    username: process.env.RAIL_USER!,
+    password: process.env.RAIL_API_KEY!,
+  },
   headers: {
-    "Authorization": `Basic ${auth}`,
     "Content-Type": "application/json",
   },
 });
